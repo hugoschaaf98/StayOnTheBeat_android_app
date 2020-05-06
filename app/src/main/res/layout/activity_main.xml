@@ -28,4 +28,15 @@
         android:onClick="openSettingsActivity"
         android:src="@drawable/settings_icon" />
 
+    <Button
+        android:id="@+id/Sms_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="110dp"
+        android:onClick="openSmsActivity"
+        android:text="Sms part" />
+
 </RelativeLayout>
