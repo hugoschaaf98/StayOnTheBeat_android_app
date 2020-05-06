@@ -10,8 +10,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="/media/linux_win7_exchange/Programmation/AndroidStudio projects/StayOnTheBeat" />
-            <option value="/media/linux_win7_exchange/Programmation/AndroidStudio projects/StayOnTheBeat/app" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

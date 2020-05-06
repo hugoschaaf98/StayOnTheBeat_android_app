@@ -113,6 +113,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(iOpenSettings);
     }
 
+    public void openSmsActivity(View v) {
+        Intent iOpenSmsPart = new Intent(this, SmsSend.class);
+        startActivity(iOpenSmsPart);
+    }
+  
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
