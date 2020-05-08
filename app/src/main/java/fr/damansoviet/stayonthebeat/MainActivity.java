@@ -1,9 +1,12 @@
 package fr.damansoviet.stayonthebeat;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -30,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     // the metronome itself
     private MetronomeSingleton metronome;
 
+    private Vibrator vibrator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mInit() {
+        // vibrator config
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         // bluetooth config
         setupBluetooth();
         // initialize and configure the metronome
@@ -98,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         rv.setListener(new RoundKnobButtonListener() {
             public void onStateChange(boolean newState) {
                 Toast.makeText(MainActivity.this,  "Metronome "+(newState?"started":"paused"),  Toast.LENGTH_SHORT).show();
+                vibrator.vibrate(VibrationEffect.EFFECT_CLICK);
                 metronome.setState(newState);
             }
             public void onRotate(float percentage) {
@@ -109,18 +117,16 @@ public class MainActivity extends AppCompatActivity {
 
     //*** Slots ***//
     public void openSettingsActivity(View v) {
+        vibrator.vibrate(VibrationEffect.EFFECT_CLICK);
         Intent iOpenSettings = new Intent(this, SettingsActivity.class);
         startActivity(iOpenSettings);
     }
 
-
-    //*** Slots ***//
     public void openSmsActivity(View v) {
         Intent iOpenSmsPart = new Intent(this, SmsSend.class);
         startActivity(iOpenSmsPart);
     }
-
-
+  
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -129,9 +135,11 @@ public class MainActivity extends AppCompatActivity {
             case REQUEST_ENABLE_BT:
                 if(resultCode == RESULT_OK) {
                     Log.i(TAG, "Bluetooth successfully enabled");
+                    vibrator.vibrate(VibrationEffect.EFFECT_TICK);
                 }
                 else {
                     Toast.makeText(this, "You must enable bluetooth to use this app !", Toast.LENGTH_SHORT).show();
+                    vibrator.vibrate(VibrationEffect.EFFECT_DOUBLE_CLICK);
                 }
                 break;
 
