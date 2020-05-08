@@ -5,11 +5,13 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.telephony.SmsManager;
@@ -38,6 +40,9 @@ public class SmsSend extends AppCompatActivity {
     private EditText txtContacts ;
     private Button contact ;
     private static int PICK_CONTACT = 1 ;
+    // initialisation de la partie vibreur
+    Vibrator vibrator ;
+
 
 
     @Override
@@ -61,6 +66,10 @@ public class SmsSend extends AppCompatActivity {
         contact = (Button)findViewById ( R.id.Contact );
         String pub = "Hello venez donc télécharger lapplication StayOnTheBeat c'est trop cool ! ";
         message.setText ( pub );
+        vibrator = (Vibrator) getSystemService ( VIBRATOR_SERVICE );
+
+
+
 
 
         //recupContacts ();
@@ -81,7 +90,7 @@ public class SmsSend extends AppCompatActivity {
             // on a plus qua injecter nos infos dans la fonction permettant lenvoi de sms.
             SmsManager.getDefault ().sendTextMessage ( txt,null,msg,null,null );
             //message pour dire que sms est parti
-            Toast.makeText ( SmsSend.this,"SMS ENVOYE AVEC SUCCES",Toast.LENGTH_SHORT ).show ();
+            fnctVibration ( "Message envoyé",350 );
             //vider le texte
             //message.setText ( " " );
         }
@@ -153,6 +162,17 @@ public class SmsSend extends AppCompatActivity {
 
         }
 
+    }
+
+    /**
+     *
+     * @param name le message à afficher
+     * @param vib  le tps en ms de vibration
+     */
+    public void fnctVibration( String name, int vib)
+    {
+        vibrator.vibrate(vib);// le nbr est le nbr de fois ou je repete sachant que 0 est infini
+        Toast.makeText ( SmsSend.this,name,Toast.LENGTH_SHORT ).show ();
     }
 
 
