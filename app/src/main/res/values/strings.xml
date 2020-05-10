@@ -18,7 +18,8 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
     <!-- Buttons -->
-    <string name="b_settings_content_description">Open application settings</string>
+    <string name="ib_settings_content_description">Open application settings</string>
+    <string name="bt_sms_text">Recommend StayOnTheBeat</string>
 
     <!-- TextViews -->
     <string name="tempo_text">Select the tempo</string>

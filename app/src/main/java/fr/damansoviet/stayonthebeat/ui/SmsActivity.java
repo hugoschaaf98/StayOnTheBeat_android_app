@@ -1,11 +1,10 @@
-package fr.damansoviet.stayonthebeat;
+package fr.damansoviet.stayonthebeat.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -17,22 +16,19 @@ import android.provider.Settings;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.SimpleCursorAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
-import android.os.Bundle;
 
-public class SmsSend extends AppCompatActivity {
+import fr.damansoviet.stayonthebeat.R;
+
+public class SmsActivity extends AppCompatActivity {
 
     //on definit nos propriété
-    // pour editText on va recuperer ce que lon inject sur les elements dont le type est edittext (a voir sur les elements activity_main)
+    // pour editText on va recuperer ce que lon inject sur les elements dont le type est edittext (a voir sur les elements activity_control)
     private EditText phonetxt ;
     private EditText message ;
     private Button envoi ;
@@ -48,15 +44,15 @@ public class SmsSend extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate ( savedInstanceState );
-        setContentView ( R.layout.activity_sms_send );
-        initActivity ();
+        setContentView ( R.layout.activity_sms);
+        init();
 
     }
 
 
 
     // initialisation
-    private void initActivity()
+    private void init()
     {
         // recuperation des objets graphiques
         phonetxt = (EditText)findViewById( R.id.TxtPhone );
@@ -64,7 +60,7 @@ public class SmsSend extends AppCompatActivity {
         envoi = (Button)findViewById( R.id.btnEnvoi );
         LaySMS = (LinearLayout)findViewById ( R.id.laySMS );
         contact = (Button)findViewById ( R.id.Contact );
-        String pub = "Hello venez donc télécharger lapplication StayOnTheBeat c'est trop cool ! ";
+        String pub = "Hello,\nvenez télécharger l'application StayOnTheBeat c'est super utile ! :)";
         message.setText ( pub );
         vibrator = (Vibrator) getSystemService ( VIBRATOR_SERVICE );
 
@@ -80,7 +76,7 @@ public class SmsSend extends AppCompatActivity {
     public void onClickSend(View v)
     {
         // on va faire un controle si nous avons les compatibilite
-        if(ActivityCompat.checkSelfPermission ( SmsSend.this,Manifest.permission.SEND_SMS ) ==
+        if(ActivityCompat.checkSelfPermission ( SmsActivity.this,Manifest.permission.SEND_SMS ) ==
                 PackageManager.PERMISSION_GRANTED)
         {
             //pour envoyer notre sms il faut quon recupere ce qui a ete tapé au préalable
@@ -98,7 +94,7 @@ public class SmsSend extends AppCompatActivity {
         {
             //demande une fois de donner la permission
             // si il y a refus on lui fera un autre type de message
-            if(!ActivityCompat.shouldShowRequestPermissionRationale ( SmsSend.this,
+            if(!ActivityCompat.shouldShowRequestPermissionRationale ( SmsActivity.this,
                     Manifest.permission.SEND_SMS))
             {
                 //je nai pas la permission donc on va faire un tableau des permissions quon va demander
@@ -107,7 +103,7 @@ public class SmsSend extends AppCompatActivity {
                 //request 2 est le numero quon va controler dans le cas ou on va reverifier le type de permission
                 // qui a ete affecte
                 //ici cest affichage de la fenetre de permission
-                ActivityCompat.requestPermissions ( SmsSend.this, permissions,2);
+                ActivityCompat.requestPermissions ( SmsActivity.this, permissions,2);
             }
             else
             {
@@ -129,7 +125,7 @@ public class SmsSend extends AppCompatActivity {
                     public void onClick(View view)
                     {
                         final Intent intent = new Intent( Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        final Uri uri = Uri.fromParts ( "package" , SmsSend.this.getPackageName(),null);
+                        final Uri uri = Uri.fromParts ( "package" , SmsActivity.this.getPackageName(),null);
                         intent.setData ( uri );
                         startActivity ( intent );
                     }
@@ -145,19 +141,19 @@ public class SmsSend extends AppCompatActivity {
     {
         // cette fonction n'a pour but que de demander lacces aux contacts du telephone avant dafficher les contacts
         // on va faire un controle si nous avons les compatibilite
-        if(ActivityCompat.checkSelfPermission ( SmsSend.this,Manifest.permission.READ_CONTACTS ) ==
+        if(ActivityCompat.checkSelfPermission ( SmsActivity.this,Manifest.permission.READ_CONTACTS ) ==
                 PackageManager.PERMISSION_GRANTED)
         {
-            initActivity ();
+            init();
         }
         else
         {
             String[] permissions = {Manifest.permission.READ_CONTACTS};
-            ActivityCompat.requestPermissions ( SmsSend.this, permissions,2);
-            if(ActivityCompat.checkSelfPermission ( SmsSend.this,Manifest.permission.SEND_SMS ) ==
+            ActivityCompat.requestPermissions ( SmsActivity.this, permissions,2);
+            if(ActivityCompat.checkSelfPermission ( SmsActivity.this,Manifest.permission.SEND_SMS ) ==
                     PackageManager.PERMISSION_GRANTED)
             {
-                initActivity ();
+                init();
             }
 
         }
@@ -172,7 +168,7 @@ public class SmsSend extends AppCompatActivity {
     public void fnctVibration( String name, int vib)
     {
         vibrator.vibrate(vib);// le nbr est le nbr de fois ou je repete sachant que 0 est infini
-        Toast.makeText ( SmsSend.this,name,Toast.LENGTH_SHORT ).show ();
+        Toast.makeText ( SmsActivity.this,name,Toast.LENGTH_SHORT ).show ();
     }
 
 
