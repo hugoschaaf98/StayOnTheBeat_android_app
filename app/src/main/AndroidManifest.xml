@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fr.damansoviet.stayonthebeat">
-
     <!-- Bluetooth permissions -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <!-- Vibrator permissions -->
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <!-- SMS permissions -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- Vibrator permissions -->
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- SMS permissions -->
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
 
     <application
         android:name=".StayOnTheBeatApplication"
@@ -20,9 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".ui.SmsActivity"></activity>
-
+        <activity android:name=".ui.Settings"></activity>
+        <activity android:name=".ui.SmsActivity" />
         <activity android:name=".ui.ControlActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

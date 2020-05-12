@@ -6,22 +6,26 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
+import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import fr.damansoviet.stayonthebeat.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import fr.damansoviet.stayonthebeat.AppContainer;
-import fr.damansoviet.stayonthebeat.viewmodels.ControlViewModel;
-import fr.damansoviet.stayonthebeat.ui.RoundKnobButton.RoundKnobButtonListener;
+import fr.damansoviet.stayonthebeat.R;
 import fr.damansoviet.stayonthebeat.StayOnTheBeatApplication;
 import fr.damansoviet.stayonthebeat.Utils;
+import fr.damansoviet.stayonthebeat.ui.RoundKnobButton.RoundKnobButtonListener;
+import fr.damansoviet.stayonthebeat.viewmodels.ControlViewModel;
+
 
 public class ControlActivity extends AppCompatActivity {
 
@@ -30,6 +34,7 @@ public class ControlActivity extends AppCompatActivity {
     private RelativeLayout mRlControlZone;
     private ImageButton mIbSettings;
     private TextView mTvBpm;
+
     // ViewModels
     @Nullable
     private ControlViewModel mControlViewModel;
@@ -41,13 +46,15 @@ public class ControlActivity extends AppCompatActivity {
         // data
         AppContainer appContainer = ((StayOnTheBeatApplication)getApplication()).appContainer;
         mControlViewModel = new ControlViewModel(appContainer.metronome);
+
+        NavBar();
         init();
     }
 
     private void init() {
         // graphical components
         mRlControlZone = (RelativeLayout) findViewById(R.id.rl_control_zone);
-        mIbSettings = (ImageButton) findViewById(R.id.ib_settings);
+        //mIbSettings = (ImageButton) findViewById(R.id.ib_settings);
         setupAndDrawBpmControl();
     }
 
@@ -88,11 +95,17 @@ public class ControlActivity extends AppCompatActivity {
         });
     }
 
-    //*** Slots ***//
+    /**
+     *
+     * @param v
+     */
+    /**
     public void openSmsActivity(View v) {
         Intent iOpenSmsPart = new Intent(this, SmsActivity.class);
         startActivity(iOpenSmsPart);
     }
+     **/
+
   
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -102,5 +115,40 @@ public class ControlActivity extends AppCompatActivity {
             default:
                 Log.v(TAG, "Unknown requestCode.");
         }
+    }
+
+    private void NavBar()
+    {
+
+        //initialisation de notre bande comprenant differents elements
+        BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById ( R.id.bottom_navigation );
+        // appel de notre fonction dinitialisation
+
+        //cette fonction s'occupera de la fonctionnalite de notre bar de navigation
+
+        // premiere etape sera de choisir le premier element de la navbar de sélectionné
+        bottomNavigationView.setSelectedItemId ( R.id.maison);
+
+        // nous allons a present ecouter ce que va faire l'utilisateur
+        bottomNavigationView.setOnNavigationItemSelectedListener ( new BottomNavigationView.OnNavigationItemSelectedListener () {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId ()) {
+                    case R.id.maison:
+                        return true;
+
+                    case R.id.settings:
+                        startActivity ( new Intent ( getApplicationContext (),Settings.class ) );
+                        overridePendingTransition ( 0,0 );
+                        return true;
+
+                    case R.id.sms:
+                        startActivity ( new Intent ( getApplicationContext (),SmsActivity.class ) );
+                        overridePendingTransition ( 0,0 );
+                        return true;
+                }
+                return false;
+            }
+        } );
     }
 }

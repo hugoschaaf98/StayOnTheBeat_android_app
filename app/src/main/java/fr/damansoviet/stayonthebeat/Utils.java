@@ -1,9 +1,9 @@
 package fr.damansoviet.stayonthebeat;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.annotation.SuppressLint;
 import android.os.Build;
 import android.view.View;
 
@@ -67,5 +67,7 @@ public class Utils {
             return View.generateViewId();
         }
     }
+
+
 
 }

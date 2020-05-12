@@ -17,37 +17,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/ib_settings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/ib_settings_content_description"
-        android:src="@drawable/settings_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/bt_sms"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="openSmsActivity"
-        android:text="@string/bt_sms_text"
-        app:layout_constraintEnd_toStartOf="@+id/ib_settings"
-        app:layout_constraintHorizontal_bias="0.529"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ib_settings" />
-
     <RelativeLayout
         android:id="@+id/rl_control_zone"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/ib_settings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_metronome_desc" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_metronome_desc">
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="411dp"
+        android:layout_height="423dp"
+        android:layout_alignParentTop="true"
+        tools:layout_editor_absoluteY="306dp">
+
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:itemBackground="@color/colorNavBar"
+            app:itemIconTint="@drawable/bottom_navigation_colors"
+            app:itemTextColor="@drawable/bottom_navigation_colors"
+            app:menu="@menu/menu_navigation" />
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
