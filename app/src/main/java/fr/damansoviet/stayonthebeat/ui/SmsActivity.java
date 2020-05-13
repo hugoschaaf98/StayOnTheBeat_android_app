@@ -31,7 +31,6 @@ import fr.damansoviet.stayonthebeat.R;
 public class SmsActivity extends AppCompatActivity {
 
     //on definit nos propriété
-    // pour editText on va recuperer ce que lon inject sur les elements dont le type est edittext (a voir sur les elements activity_control)
     private EditText phonetxt ;
     private EditText message ;
     private Button envoi ;
@@ -39,6 +38,7 @@ public class SmsActivity extends AppCompatActivity {
     private EditText txtContacts ;
     private Button contact ;
     private static int PICK_CONTACT = 1 ;
+    private int verif = 0 ;
     // initialisation de la partie vibreur
     Vibrator vibrator ;
 
@@ -48,14 +48,16 @@ public class SmsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate ( savedInstanceState );
         setContentView ( R.layout.activity_sms);
-        NavBar ();
-        init();
 
+        // Appel Des Fonctions
+        NavBar();
+        init();
     }
 
 
-
-    // initialisation
+    /**
+     * Fonction d'initialisation
+     */
     private void init()
     {
         // recuperation des objets graphiques
@@ -67,16 +69,9 @@ public class SmsActivity extends AppCompatActivity {
         String pub = "Hello,\nvenez télécharger l'application StayOnTheBeat c'est super utile ! :)";
         message.setText ( pub );
         vibrator = (Vibrator) getSystemService ( VIBRATOR_SERVICE );
-
-
-
-
-
-        //recupContacts ();
-        //affcontact();
-        //gestion de levenement click sur boutton envoie
     }
 
+    /** SLOTS **/
     public void onClickSend(View v)
     {
         // on va faire un controle si nous avons les compatibilite
@@ -98,10 +93,13 @@ public class SmsActivity extends AppCompatActivity {
         {
             //demande une fois de donner la permission
             // si il y a refus on lui fera un autre type de message
+            /**
             if(!ActivityCompat.shouldShowRequestPermissionRationale ( SmsActivity.this,
                     Manifest.permission.SEND_SMS))
             {
                 //je nai pas la permission donc on va faire un tableau des permissions quon va demander
+
+                // Pas de permission donc ajout de cette demande dans un tableau
                 String[] permissions = {Manifest.permission.SEND_SMS};
                 // afficher la demande de permission
                 //request 2 est le numero quon va controler dans le cas ou on va reverifier le type de permission
@@ -115,14 +113,22 @@ public class SmsActivity extends AppCompatActivity {
                 // cest obligatoire
                 messagePermissionObligatoire ();
             }
+             **/
+            messagePermissionObligatoire ();
         }
     }
 
-    // message pour informer l'user que la permission est obligatoire
+
+
+    /**
+     * Cette fonction fait simplement apparaitre un snackbar.
+     * Cette dernière ne s'active que dans le cas où l'utilisateur à fait un refus pour donner la permission
+     * de pouvoir envoyer des sms.
+     */
     private void messagePermissionObligatoire()
     {
-        //le setaction va preciser ce quil doit faire
         Snackbar.make ( LaySMS,"Permission SMS obligatoire",Snackbar.LENGTH_LONG).
+                //ici nous allons générer dans la snackbar un raccourci permettant à l'utilisateur d'accéder à ses paramètres de permission
                 setAction ( "Paramètres",new View.OnClickListener ()
                 {
                     @Override
@@ -176,32 +182,37 @@ public class SmsActivity extends AppCompatActivity {
     }
 
 
+
+
+    /** SLOTS **/
     public void callContacts(View v)
     {
-        // cette fonction sactive des que le bouton de lapp est appuye
         Intent intent = new Intent ( Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI );
-        //on lance le prog donc on definit le intent pour preciser ou lancer
-        // et comme deuxieme argument on doit donner une valeur > 0 pour retourner un onActivityResult()
         startActivityForResult( intent,PICK_CONTACT );
     }
 
+
+    /**
+     * Récupération de l'information sélectionné par l'utilisateur (après avoir cliqué sur callcontacts)
+     */
     @Override
     protected void onActivityResult(int reqCode , int resultCode , Intent data)
     {
+
         super.onActivityResult ( reqCode , resultCode, data);
 
-        //on verifie si reqcode correspond toujours a pickcode
         if(reqCode == PICK_CONTACT)
         {
             if(resultCode == AppCompatActivity.RESULT_OK)
             {
                 Uri contactData = data.getData ();
-                //ContentResolver contentResolver = this.getContentResolver ();
                 Cursor c = getContentResolver ().query (contactData,null, null ,null,null );
 
                 if(c.moveToFirst ())
                 {
                     String name = c.getString ( c.getColumnIndex (ContactsContract.Contacts.DISPLAY_NAME) );
+                    // Problème rencontré, impossible de récupérer le numéro, appel d'une fonction qui permet en fonction du nom
+                    // de retrouver le numéro à partir de la liste de ses contacts
                     checkNumber(name);
                     c.close ();
                 }
@@ -209,11 +220,15 @@ public class SmsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * la fonction permet de regénérer un cursor comprenant les numeros et les noms de ses contacts,
+     * si un des noms est coherant avec largument name, on affichera le numero qui lui correspond
+     *
+     * @param name : nom du contact
+     */
     public void checkNumber(String name)
     {
-        //le but est de regénérer un cursor comprenant les numeros et les noms et si un des noms est coherant
-        // avec largument injecte on affichera le numero
-
+        // recupération du contenu du téléphone
         ContentResolver contentResolver = this.getContentResolver ();
         Cursor cursor = contentResolver.query( ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 new String[]{
@@ -235,15 +250,26 @@ public class SmsActivity extends AppCompatActivity {
                 //dans la deuxieme il y a number
                 String nom = cursor.getString ( cursor.getColumnIndex (ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_ALTERNATIVE) );
                 String phone = cursor.getString ( cursor.getColumnIndex (ContactsContract.CommonDataKinds.Phone.NUMBER) );
-                //maintenant quon a lle nom et le phone on regarde si cest pareil et hop si cest le cas on affiche le numero
+                //maintenant quon a lle nom et le phone on regarde si cest pareil
                 Log.d("urgence", nom + " " + name);
                 if(nom.equals ( name ))
                 {
                     Log.d("GG", "IM HERE");
                     //Toast.makeText (this , "You've picked" + phone , Toast.LENGTH_LONG).show();
+                    verif = 1 ;
                     phonetxt.setText ( phone );
                 }
 
+            }
+            // ajout d'un message d'erreur dans le cas où la fonction n'a pas pu trouver un nom correspondant
+            if (verif == 0)
+            {
+                Toast.makeText ( this,"Error : le numéro n'a pas pu être injecté",Toast.LENGTH_SHORT ).show ();
+
+            }
+            else
+            {
+                verif = 0 ;
             }
             //fermer le cursor
             cursor.close ();
@@ -252,19 +278,19 @@ public class SmsActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Fonction permettant de gérer la partie de la bar de navigation
+     */
     private void NavBar()
     {
 
         //initialisation de notre bande comprenant differents elements
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById ( R.id.bottom_navigation );
-        // appel de notre fonction dinitialisation
 
-        //cette fonction s'occupera de la fonctionnalite de notre bar de navigation
-
-        // premiere etape sera de choisir le premier element de la navbar de sélectionné
+        //sélection de l'élément correspondant à notre page
         bottomNavigationView.setSelectedItemId ( R.id.sms );
 
-        // nous allons a present ecouter ce que va faire l'utilisateur
+        // gérer les redirections en fonction de ce que va faire l'utilisateur
         bottomNavigationView.setOnNavigationItemSelectedListener ( new BottomNavigationView.OnNavigationItemSelectedListener () {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

@@ -24,19 +24,21 @@ public class Settings extends AppCompatActivity {
 
     }
 
+
+    /**
+     * Fonction permettant de gérer la partie de la bar de navigation
+     */
     private void NavBar()
     {
 
         //initialisation de notre bande comprenant differents elements
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById ( R.id.bottom_navigation );
-        // appel de notre fonction dinitialisation
 
-        //cette fonction s'occupera de la fonctionnalite de notre bar de navigation
 
-        // premiere etape sera de choisir le premier element de la navbar de sélectionné
+        //sélection de l'élément correspondant à notre page
         bottomNavigationView.setSelectedItemId ( R.id.settings );
 
-        // nous allons a present ecouter ce que va faire l'utilisateur
+        // gérer les redirections en fonction de ce que va faire l'utilisateur
         bottomNavigationView.setOnNavigationItemSelectedListener ( new BottomNavigationView.OnNavigationItemSelectedListener () {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

@@ -1,5 +1,6 @@
 package fr.damansoviet.stayonthebeat.ui;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -28,6 +30,7 @@ import fr.damansoviet.stayonthebeat.viewmodels.ControlViewModel;
 
 
 public class ControlActivity extends AppCompatActivity {
+
 
     private static final String TAG = "ControlActivity";
     // graphical components
@@ -48,6 +51,7 @@ public class ControlActivity extends AppCompatActivity {
         mControlViewModel = new ControlViewModel(appContainer.metronome);
 
         NavBar();
+        permission ();
         init();
     }
 
@@ -117,19 +121,20 @@ public class ControlActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * Fonction permettant de gérer la partie de la bar de navigation
+     */
     private void NavBar()
     {
 
         //initialisation de notre bande comprenant differents elements
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById ( R.id.bottom_navigation );
-        // appel de notre fonction dinitialisation
 
-        //cette fonction s'occupera de la fonctionnalite de notre bar de navigation
-
-        // premiere etape sera de choisir le premier element de la navbar de sélectionné
+        //sélection de l'élément correspondant à notre page
         bottomNavigationView.setSelectedItemId ( R.id.maison);
 
-        // nous allons a present ecouter ce que va faire l'utilisateur
+        // gérer les redirections en fonction de ce que va faire l'utilisateur
         bottomNavigationView.setOnNavigationItemSelectedListener ( new BottomNavigationView.OnNavigationItemSelectedListener () {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -150,5 +155,74 @@ public class ControlActivity extends AppCompatActivity {
                 return false;
             }
         } );
+    }
+
+    public static String[] add(String[] originalArray, String newItem)
+    {
+        int currentSize = originalArray.length;
+        int newSize = currentSize + 1;
+        String[] tempArray = new String[ newSize ];
+        for (int i=0; i < currentSize; i++)
+        {
+            tempArray[i] = originalArray [i];
+        }
+        tempArray[newSize- 1] = newItem;
+        return tempArray;
+    }
+    /**
+     * Cette fonction va permettre de vérifier quel permission a été autorisé si ce n'est pas le cas
+     * ajout d'une fenetre pop up demandant l'autorisation de cette denière
+     */
+    public void permission()
+    {
+
+        // nous allons avoir besoin de demander la permission d'acces pour les contacts
+        // pour les sms
+        // pour avoir acces au bluetooth
+
+        // occupons nous des sms en premier
+
+        // dans un premier temps nous allons initialiser un tableau permettant de receuillir les
+        // permissions dont nous avons besoin
+
+        // initialisation de notre tableau
+
+
+
+        String[] mypermission = {};
+
+        // occupons nous de verifier les sms
+        if(!ActivityCompat.shouldShowRequestPermissionRationale ( ControlActivity.this,
+                Manifest.permission.SEND_SMS))
+        {
+            mypermission = add(mypermission,Manifest.permission.SEND_SMS);
+        }
+
+        // bluetooth
+        if(!ActivityCompat.shouldShowRequestPermissionRationale ( ControlActivity.this,
+                Manifest.permission.BLUETOOTH))
+        {
+            mypermission = add(mypermission,Manifest.permission.BLUETOOTH);
+
+        }
+
+        // Contact
+        if(!ActivityCompat.shouldShowRequestPermissionRationale ( ControlActivity.this,
+                Manifest.permission.READ_CONTACTS))
+        {
+            mypermission = add(mypermission,Manifest.permission.READ_CONTACTS);
+
+        }
+
+
+
+        for(String element:mypermission)
+        {
+            Log.d("check_permission", element);
+        }
+
+        ActivityCompat.requestPermissions ( ControlActivity.this, mypermission,2);
+
+
     }
 }
