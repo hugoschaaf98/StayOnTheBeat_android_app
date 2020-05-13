@@ -301,7 +301,7 @@ public class SmsActivity extends AppCompatActivity {
                         return true;
 
                     case R.id.settings:
-                        startActivity ( new Intent ( getApplicationContext (),Settings.class ) );
+                        startActivity ( new Intent ( getApplicationContext (),fr.damansoviet.stayonthebeat.ui.Settings.class ) );
                         overridePendingTransition ( 0,0 );
                         return true;
 
