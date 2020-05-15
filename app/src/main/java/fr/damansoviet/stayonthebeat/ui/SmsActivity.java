@@ -16,7 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,7 +34,7 @@ public class SmsActivity extends AppCompatActivity {
     private EditText phonetxt ;
     private EditText message ;
     private Button envoi ;
-    private LinearLayout LaySMS ;
+    private RelativeLayout LaySMS ;
     private EditText txtContacts ;
     private Button contact ;
     private static int PICK_CONTACT = 1 ;
@@ -64,7 +64,7 @@ public class SmsActivity extends AppCompatActivity {
         phonetxt = (EditText)findViewById( R.id.TxtPhone );
         message = (EditText)findViewById( R.id.TxtMessage );
         envoi = (Button)findViewById( R.id.btnEnvoi );
-        LaySMS = (LinearLayout)findViewById ( R.id.laySMS );
+        LaySMS = (RelativeLayout) findViewById ( R.id.laySMS );
         contact = (Button)findViewById ( R.id.Contact );
         String pub = "Hello,\nvenez télécharger l'application StayOnTheBeat c'est super utile ! :)";
         message.setText ( pub );
@@ -278,7 +278,7 @@ public class SmsActivity extends AppCompatActivity {
     }
 
 
-    /**
+    /**0,0
      * Fonction permettant de gérer la partie de la bar de navigation
      */
     private void NavBar()
@@ -297,12 +297,12 @@ public class SmsActivity extends AppCompatActivity {
                 switch (item.getItemId ()) {
                     case R.id.maison:
                         startActivity ( new Intent ( getApplicationContext (),ControlActivity.class ) );
-                        overridePendingTransition ( 0,0 );
+                        overridePendingTransition ( R.anim.slide_in_right,R.anim.slide_out_left );
                         return true;
 
                     case R.id.settings:
                         startActivity ( new Intent ( getApplicationContext (),fr.damansoviet.stayonthebeat.ui.Settings.class ) );
-                        overridePendingTransition ( 0,0 );
+                        overridePendingTransition ( R.anim.slide_in_right,R.anim.slide_out_left );
                         return true;
 
                     case R.id.sms:

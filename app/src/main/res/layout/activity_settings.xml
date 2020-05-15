@@ -5,15 +5,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBG"
     tools:context=".ui.Settings">
 
-    <TextView
+
+    <Switch
+        android:id="@+id/btn_blt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Settings"
-        android:textSize="50sp"
-        android:textStyle="bold"
-        android:layout_centerInParent="true"/>
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="135dp"
+        android:layout_marginBottom="475dp"
+        android:onClick="OnOff"
+        android:text="Bluetooth" />
+
+    <Button
+        android:id="@+id/btn_disc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="61dp"
+        android:layout_marginBottom="600dp"
+        android:onClick="btnDiscover"
+        android:text="Scanner les appareils autour" />
+
+    <Button
+        android:id="@+id/bn_discover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="99dp"
+        android:layout_marginBottom="526dp"
+        android:onClick="btnEnableDisable_Discoverable"
+        android:text="Activer la détection" />
+
+    <ListView
+        android:id="@+id/LvNewDevices"
+        android:layout_width="match_parent"
+        android:layout_height="387dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="61dp">
+
+    </ListView>
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

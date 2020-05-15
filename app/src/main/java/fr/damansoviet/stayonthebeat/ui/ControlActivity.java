@@ -144,12 +144,12 @@ public class ControlActivity extends AppCompatActivity {
 
                     case R.id.settings:
                         startActivity ( new Intent ( getApplicationContext (),Settings.class ) );
-                        overridePendingTransition ( 0,0 );
+                        overridePendingTransition ( R.anim.slide_in_right,R.anim.slide_out_left );
                         return true;
 
                     case R.id.sms:
                         startActivity ( new Intent ( getApplicationContext (),SmsActivity.class ) );
-                        overridePendingTransition ( 0,0 );
+                        overridePendingTransition (  R.anim.slide_in_left,R.anim.slide_out_right);
                         return true;
                 }
                 return false;
