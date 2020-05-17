@@ -99,18 +99,6 @@ public class ControlActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     *
-     * @param v
-     */
-    /**
-    public void openSmsActivity(View v) {
-        Intent iOpenSmsPart = new Intent(this, SmsActivity.class);
-        startActivity(iOpenSmsPart);
-    }
-     **/
-
-  
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -143,7 +131,7 @@ public class ControlActivity extends AppCompatActivity {
                         return true;
 
                     case R.id.settings:
-                        startActivity ( new Intent ( getApplicationContext (),Settings.class ) );
+                        startActivity ( new Intent ( getApplicationContext (), SettingsActivity.class ) );
                         overridePendingTransition ( R.anim.slide_in_right,R.anim.slide_out_left );
                         return true;
 

@@ -25,23 +25,23 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.Set;
 
+import fr.damansoviet.stayonthebeat.AppContainer;
 import fr.damansoviet.stayonthebeat.R;
+import fr.damansoviet.stayonthebeat.StayOnTheBeatApplication;
+import fr.damansoviet.stayonthebeat.models.peripherals.BluetoothManager;
 import fr.damansoviet.stayonthebeat.models.peripherals.DeviceListAdapter;
 
-public class Settings extends AppCompatActivity implements AdapterView.OnItemClickListener{
+public class SettingsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
+    private static final String TAG = "Settings Activity";
 
+    private BluetoothAdapter mBluetoothAdapter ;
+    private BluetoothManager mBluetoothManager;
 
-    //Initialisation des paramètres
-
-    //TAG pour les LOG.d
-    private static final String TAG = "MainActivity";
-
-    BluetoothAdapter mBluetoothAdapter ;
     public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>() ;
     public DeviceListAdapter mDeviceListAdapter ;
     ListView lvNewDevices ;
-    private Context MainActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate ( savedInstanceState );
@@ -51,9 +51,8 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemCli
         initActivity();
         // initialisation de notre adapteur bluetooth
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-
-
+        AppContainer appContainer = ((StayOnTheBeatApplication)getApplication()).appContainer;
+        mBluetoothManager = appContainer.bluetoothManager;
     }
 
     /**
@@ -77,7 +76,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemCli
     {
         Button btn_blt = (Button) findViewById ( R.id.btn_blt );
         lvNewDevices = (ListView) findViewById ( R.id.LvNewDevices );
-        lvNewDevices.setOnItemClickListener ( (AdapterView.OnItemClickListener) Settings.this );
+        lvNewDevices.setOnItemClickListener ( (AdapterView.OnItemClickListener) SettingsActivity.this );
     }
 
     /*** SLOTS ***/
@@ -162,7 +161,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemCli
             //nous allons checker si il y a permission
             checkBTPermissions();
 
-            mBluetoothAdapter.startDiscovery ();
+            mBluetoothAdapter.startDiscovery();
 
             // ici, cela ne va pas nous aider qu'à débuguer, nous allons aussi intégrer ce que nous avvons réceptionné dans une liste
             // généré par notre broadcast3
@@ -173,7 +172,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemCli
         {
             //on va checker les permissions
             checkBTPermissions ();
-            Toast.makeText (Settings.this,"Recherche d'appareils en cours ...",Toast.LENGTH_LONG).show ();
+            Toast.makeText (SettingsActivity.this,"Recherche d'appareils en cours ...",Toast.LENGTH_LONG).show ();
 
             // on lance la recherche
             mBluetoothAdapter.startDiscovery () ;
@@ -215,16 +214,22 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemCli
     @Override
     public  void onItemClick(AdapterView<?> adapterView,View v ,int i ,long l)
     {
+        BluetoothDevice tmp;
+
         //nous devons tout dabord supprimer la recherche car cela demande beaucoup de memoire
         mBluetoothAdapter.cancelDiscovery ();
 
         Log.d(TAG , "onItemCLick : you clicked on a device");
         //nous allons recuperer les infos que vous avez selectionné
-        String deviceName = mBTDevices.get(i).getName ();
-        String deviceAdress = mBTDevices.get(i).getAddress ();
+        tmp = mBTDevices.get(i);
+        String deviceName = tmp.getName ();
+        String deviceAddress = tmp.getAddress ();
+
+        // set it in the BluetoothManager
+
 
         Log.d(TAG , "onItemClick : deviceName = " + deviceName);
-        Log.d(TAG , "onItemClick : deviceAdress = " + deviceAdress);
+        Log.d(TAG , "onItemClick : deviceAdress = " + deviceAddress);
 
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
         {
@@ -364,7 +369,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemCli
 
             if(action.equals(BluetoothDevice.ACTION_FOUND))
             {
-                Toast.makeText (Settings.this,"Appreil trouvé !",Toast.LENGTH_SHORT).show ();
+                Toast.makeText (SettingsActivity.this,"Appreil trouvé !",Toast.LENGTH_SHORT).show ();
                 BluetoothDevice device = intent.getParcelableExtra ( BluetoothDevice.EXTRA_DEVICE );
                 //ajout des devices trouvés dnas notre liste
                 mBTDevices.add(device);
@@ -405,7 +410,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemCli
                 if(mDevice.getBondState () == BluetoothDevice.BOND_BONDED)
                 {
                     //dans ce cas nous naurons qua nous logger directement
-                    Toast.makeText (Settings.this,"Connexion success",Toast.LENGTH_SHORT).show ();
+                    Toast.makeText (SettingsActivity.this,"Connexion success",Toast.LENGTH_SHORT).show ();
                     Log.d(TAG, "Broadcast : BOND_BOUNDED");
 
 
@@ -415,7 +420,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemCli
                 if(mDevice.getBondState () == BluetoothDevice.BOND_BONDING)
                 {
                     Log.d(TAG, "Broadcast : BOND_BOUNDING");
-                    Toast.makeText (Settings.this,"Tentative de Connexion avec l'appareil ...",Toast.LENGTH_SHORT).show ();
+                    Toast.makeText (SettingsActivity.this,"Tentative de Connexion avec l'appareil ...",Toast.LENGTH_SHORT).show ();
 
                 }
 
@@ -423,7 +428,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemCli
                 if(mDevice.getBondState () == BluetoothDevice.BOND_NONE)
                 {
                     Log.d(TAG, "Broadcast : BOND_NONE");
-                    Toast.makeText (Settings.this,"Impossible de se connecter avec l'appareil",Toast.LENGTH_SHORT).show ();
+                    Toast.makeText (SettingsActivity.this,"Impossible de se connecter avec l'appareil",Toast.LENGTH_SHORT).show ();
 
                 }
 
