@@ -20,6 +20,11 @@
     <!-- Buttons -->
     <string name="ib_settings_content_description">Open application settings</string>
     <string name="bt_sms_text">Recommend StayOnTheBeat</string>
+    <string name="bt_scan_devices_text">Scan devices around</string>
+    <string name="bt_enable_discoverability_text">Enable detection</string>
+
+    <!-- Switches -->
+    <string name="sw_bluetooth_text">Bluetooth</string>
 
     <!-- TextViews -->
     <string name="tempo_text">Select the tempo</string>

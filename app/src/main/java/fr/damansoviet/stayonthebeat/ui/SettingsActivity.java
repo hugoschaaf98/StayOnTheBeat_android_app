@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -29,7 +30,6 @@ import fr.damansoviet.stayonthebeat.AppContainer;
 import fr.damansoviet.stayonthebeat.R;
 import fr.damansoviet.stayonthebeat.StayOnTheBeatApplication;
 import fr.damansoviet.stayonthebeat.models.peripherals.BluetoothManager;
-import fr.damansoviet.stayonthebeat.models.peripherals.DeviceListAdapter;
 
 public class SettingsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
@@ -48,11 +48,11 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         setContentView ( R.layout.activity_settings );
 
         NavBar();
-        initActivity();
+        init();
         // initialisation de notre adapteur bluetooth
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         AppContainer appContainer = ((StayOnTheBeatApplication)getApplication()).appContainer;
         mBluetoothManager = appContainer.bluetoothManager;
+        mBluetoothAdapter = mBluetoothManager.getBluetoothAdapter();
     }
 
     /**
@@ -72,22 +72,22 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
     /**
      * Initialisation des paramètres graphiques
      */
-    private void initActivity()
+    private void init()
     {
-        Button btn_blt = (Button) findViewById ( R.id.btn_blt );
+        Button btn_blt = (Button) findViewById ( R.id.sw_bluetooth);
         lvNewDevices = (ListView) findViewById ( R.id.LvNewDevices );
         lvNewDevices.setOnItemClickListener ( (AdapterView.OnItemClickListener) SettingsActivity.this );
     }
 
     /*** SLOTS ***/
+
     /**
      * Cette fonction va permettre d'activer/désativer le bluetooth de votre téléphone
      *
      */
-    public void OnOff(View v)
+    public void bluetoothSwitch(View v)
     {
         // trois possibilités
-
         // dans le cas où le téléphone n'a pas de bluetooth
         if(mBluetoothAdapter == null)
         {
@@ -124,12 +124,12 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
     }
 
 
-    /*** SLOTS ***
+    /**
      *
      * cette fonction permettra a lappareil d'etre visible pendant quelques secondes par d'autres appareils bluetooth
      *
      */
-    public void btnEnableDisable_Discoverable(View v)
+    public void enableDiscoverability(View v)
     {
         Log.d(TAG,"50 secondes pour être vu par d'autres périphériques");
 
@@ -150,7 +150,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
      *
      *
      */
-    public void btnDiscover(View v)
+    public void scanDevices(View v)
     {
         Log.d(TAG , "btnDiscover : Looking for unpaired devices");
         if(mBluetoothAdapter.isDiscovering ())
@@ -168,17 +168,15 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
             IntentFilter discoverDevicesIntent = new IntentFilter ( BluetoothDevice.ACTION_FOUND );
             registerReceiver ( mBroadcastReceiver3 , discoverDevicesIntent);
         }
-        if(!mBluetoothAdapter.isDiscovering ())
+        if(!mBluetoothAdapter.isDiscovering())
         {
             //on va checker les permissions
             checkBTPermissions ();
             Toast.makeText (SettingsActivity.this,"Recherche d'appareils en cours ...",Toast.LENGTH_LONG).show ();
-
             // on lance la recherche
             mBluetoothAdapter.startDiscovery () ;
             IntentFilter discoverDevicesIntent = new IntentFilter ( BluetoothDevice.ACTION_FOUND );
             registerReceiver ( mBroadcastReceiver3 , discoverDevicesIntent);
-
         }
     }
 
@@ -186,24 +184,23 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
      * Simple fonction permettant d'appeler la permission de localisation, cette permission est nécessaire pour certaines versions d'android
      * Sinon la connection bluetooth ne peut pas se faire
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkBTPermissions()
     {
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP)
-        {
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                int permissionCheck = this.checkSelfPermission ( "Manifest.permission.ACCESS_FINE_LOCATION" );
-                permissionCheck += this.checkSelfPermission ( "Manifest.permission.ACCESS_COARSE_LOCATION" );
-
-                if(permissionCheck != 0)
-                {
-                    this.requestPermissions ( new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION} ,1001);
-                }
-                else
-                {
-                    Log.d ( TAG,"Pas besoin de checker les permissions" );
-                }
-            }
-        }
+//        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP)
+//        {
+//            if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                int permissionCheck = checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
+//                permissionCheck += checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
+//
+//                if(permissionCheck != 0) {
+//                    requestPermissions( new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION} ,1001);
+//                }
+//                else {
+//                     Log.d ( TAG,"Pas besoin de checker les permissions" );
+//                }
+//            }
+//        }
     }
 
     /**
@@ -215,32 +212,22 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
     public  void onItemClick(AdapterView<?> adapterView,View v ,int i ,long l)
     {
         BluetoothDevice tmp;
-
         //nous devons tout dabord supprimer la recherche car cela demande beaucoup de memoire
         mBluetoothAdapter.cancelDiscovery ();
-
         Log.d(TAG , "onItemCLick : you clicked on a device");
         //nous allons recuperer les infos que vous avez selectionné
         tmp = mBTDevices.get(i);
         String deviceName = tmp.getName ();
         String deviceAddress = tmp.getAddress ();
-
-        // set it in the BluetoothManager
-
-
         Log.d(TAG , "onItemClick : deviceName = " + deviceName);
-        Log.d(TAG , "onItemClick : deviceAdress = " + deviceAddress);
-
+        Log.d(TAG , "onItemClick : deviceAddress = " + deviceAddress);
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
         {
             Log.d(TAG , "Tentative d'apparaillage " + deviceName);
-
-            mBTDevices.get ( i ).createBond ();
-
+            tmp.createBond ();
             IntentFilter discoverDevicesIntent = new IntentFilter ( BluetoothDevice.ACTION_BOND_STATE_CHANGED);
             registerReceiver ( mBroadcastReceiver4 , discoverDevicesIntent);
         }
-
     }
 
 
@@ -400,20 +387,17 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
             final String action = intent.getAction () ;
             if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
             {
-
-
-                BluetoothDevice mDevice = intent.getParcelableExtra ( BluetoothDevice.EXTRA_DEVICE );
-
+                BluetoothDevice mDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // on fait face à trois cas
-
                 // si le composant est deja lié
                 if(mDevice.getBondState () == BluetoothDevice.BOND_BONDED)
                 {
                     //dans ce cas nous naurons qua nous logger directement
+                    mBluetoothManager.setBluetoothDevice(mDevice);
+                    mBluetoothManager.connectAndStartClient();
+
                     Toast.makeText (SettingsActivity.this,"Connexion success",Toast.LENGTH_SHORT).show ();
                     Log.d(TAG, "Broadcast : BOND_BOUNDED");
-
-
                 }
 
                 // si cest une nouvelle liaison
@@ -421,7 +405,6 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                 {
                     Log.d(TAG, "Broadcast : BOND_BOUNDING");
                     Toast.makeText (SettingsActivity.this,"Tentative de Connexion avec l'appareil ...",Toast.LENGTH_SHORT).show ();
-
                 }
 
                 // si la liaison est cassé
@@ -429,7 +412,6 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                 {
                     Log.d(TAG, "Broadcast : BOND_NONE");
                     Toast.makeText (SettingsActivity.this,"Impossible de se connecter avec l'appareil",Toast.LENGTH_SHORT).show ();
-
                 }
 
             }

@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -21,10 +23,14 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 import fr.damansoviet.stayonthebeat.AppContainer;
 import fr.damansoviet.stayonthebeat.R;
 import fr.damansoviet.stayonthebeat.StayOnTheBeatApplication;
 import fr.damansoviet.stayonthebeat.Utils;
+import fr.damansoviet.stayonthebeat.models.peripherals.BluetoothManager;
 import fr.damansoviet.stayonthebeat.ui.RoundKnobButton.RoundKnobButtonListener;
 import fr.damansoviet.stayonthebeat.viewmodels.ControlViewModel;
 
@@ -41,6 +47,7 @@ public class ControlActivity extends AppCompatActivity {
     // ViewModels
     @Nullable
     private ControlViewModel mControlViewModel;
+    private BluetoothManager mBluetoothManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +56,7 @@ public class ControlActivity extends AppCompatActivity {
         // data
         AppContainer appContainer = ((StayOnTheBeatApplication)getApplication()).appContainer;
         mControlViewModel = new ControlViewModel(appContainer.metronome);
+        mBluetoothManager = appContainer.bluetoothManager;
 
         NavBar();
         permission ();
@@ -90,11 +98,16 @@ public class ControlActivity extends AppCompatActivity {
             public void onStateChange(boolean newState) {
                 Toast.makeText(ControlActivity.this,  "Metronome "+(newState?"started":"paused"),  Toast.LENGTH_SHORT).show();
                 mControlViewModel.getMetronome().setState(newState);
+                String msg = "state changed";
+                mBluetoothManager.write(msg.getBytes());
                 StayOnTheBeatApplication.vibrator.vibrate(100);
             }
             public void onRotate(float percentage) {
                 mControlViewModel.getMetronome().setBpmPercent(percentage);
+                String msg = "bpm changed";
+                mBluetoothManager.write(msg.getBytes());
                 mTvBpm.setText(String.format("%d BPM", mControlViewModel.getMetronome().getBpm()));
+
             }
         });
     }
@@ -157,6 +170,7 @@ public class ControlActivity extends AppCompatActivity {
         tempArray[newSize- 1] = newItem;
         return tempArray;
     }
+
     /**
      * Cette fonction va permettre de vérifier quel permission a été autorisé si ce n'est pas le cas
      * ajout d'une fenetre pop up demandant l'autorisation de cette denière
@@ -175,8 +189,6 @@ public class ControlActivity extends AppCompatActivity {
 
         // initialisation de notre tableau
 
-
-
         String[] mypermission = {};
 
         // occupons nous de verifier les sms
@@ -185,7 +197,6 @@ public class ControlActivity extends AppCompatActivity {
         {
             mypermission = add(mypermission,Manifest.permission.SEND_SMS);
         }
-
         // bluetooth
         if(!ActivityCompat.shouldShowRequestPermissionRationale ( ControlActivity.this,
                 Manifest.permission.BLUETOOTH))
@@ -193,7 +204,6 @@ public class ControlActivity extends AppCompatActivity {
             mypermission = add(mypermission,Manifest.permission.BLUETOOTH);
 
         }
-
         // Contact
         if(!ActivityCompat.shouldShowRequestPermissionRationale ( ControlActivity.this,
                 Manifest.permission.READ_CONTACTS))
@@ -201,16 +211,20 @@ public class ControlActivity extends AppCompatActivity {
             mypermission = add(mypermission,Manifest.permission.READ_CONTACTS);
 
         }
-
-
-
         for(String element:mypermission)
         {
             Log.d("check_permission", element);
         }
-
         ActivityCompat.requestPermissions ( ControlActivity.this, mypermission,2);
-
-
     }
+
+    /**
+     * The Handler that gets information back from the BluetoothManager
+     */
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+        }
+    };
 }

@@ -3,8 +3,13 @@
     package="fr.damansoviet.stayonthebeat">
     <!-- Bluetooth permissions -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- Vibrator permissions -->
-    <uses-permission android:name="android.permission.VIBRATE" /> <!-- SMS permissions -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Vibrator permissions -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- SMS permissions -->
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 

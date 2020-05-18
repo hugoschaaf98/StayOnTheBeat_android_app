@@ -15,16 +15,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class BluetoothService {
+public class BluetoothService implements BluetoothEventsManagement {
 
     private static final String TAG = "Bluetooth Service";
-    // Defines several constants used when transmitting messages between the
-    // service and the UI.
-    private interface MessageConstants {
-        public static final int MESSAGE_READ = 0;
-        public static final int MESSAGE_WRITE = 1;
-        public static final int MESSAGE_TOAST = 2;
-    }
 
     @Nullable
     private Handler mHandler = null; // handler that gets info from Bluetooth service
@@ -34,9 +27,20 @@ public class BluetoothService {
     private ConnectThread mConnectThread = null;
     @Nullable
     private ConnectedThread mConnectedThread = null;
+    // the state of the bluetooth connection
+    private int mState = Constants.STATE_NONE;
 
     public BluetoothService(BluetoothAdapter bluetoothAdapter) {
         mBluetoothAdapter = bluetoothAdapter;
+        mState = Constants.STATE_NONE;
+    }
+
+    public void registerBluetoothEventsHandler(Handler handler) {
+        mHandler = handler;
+    }
+
+    public void unregisterBluetoothEventsHandler() {
+        mHandler = null;
     }
 
     /**
@@ -87,6 +91,28 @@ public class BluetoothService {
             mConnectedThread = null;
         }
     }
+    /**
+     * Write to the ConnectedThread in an unsynchronized manner
+     *
+     * @param out The bytes to write
+     * @see ConnectedThread#write(byte[])
+     */
+    public void write(byte[] out) {
+        if(mConnectedThread == null)
+        {
+            Log.w(TAG, "bluetooth connection not initialized !");
+            return;
+        }
+        // Create temporary object
+        ConnectedThread r;
+        // Synchronize a copy of the ConnectedThread
+        synchronized (this) {
+            if (mState != Constants.STATE_CONNECTED) return;
+            r = mConnectedThread;
+        }
+        // Perform the write unsynchronized
+        r.write(out);
+    }
 
     /**
      * Connect as a client (we want this app to connect only as a client).
@@ -115,6 +141,7 @@ public class BluetoothService {
         public void run() {
             // Cancel discovery because it otherwise slows down the connection.
             mBluetoothAdapter.cancelDiscovery();
+            mState = Constants.STATE_CONNECTING;
 
             try {
                 // Connect to the remote device through the socket. This call blocks
@@ -177,6 +204,7 @@ public class BluetoothService {
 
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
+            mState = Constants.STATE_CONNECTED;
         }
 
         public void run() {
@@ -190,7 +218,7 @@ public class BluetoothService {
                     numBytes = mmInStream.read(mmBuffer);
                     // Send the obtained bytes to the UI activity.
                     Message readMsg = mHandler.obtainMessage(
-                            MessageConstants.MESSAGE_READ, numBytes, -1,
+                            Constants.MESSAGE_READ, numBytes, -1,
                             mmBuffer);
                     readMsg.sendToTarget();
                 }
@@ -208,7 +236,7 @@ public class BluetoothService {
                 // Share the sent message with the UI activity.
                 if(mHandler != null) {
                     Message writtenMsg = mHandler.obtainMessage(
-                            MessageConstants.MESSAGE_WRITE, -1, -1, mmBuffer);
+                            Constants.MESSAGE_WRITE, -1, -1, mmBuffer);
                     writtenMsg.sendToTarget();
                 }
                 else {
@@ -222,7 +250,7 @@ public class BluetoothService {
                 if(mHandler != null) {
                     // Send a failure message back to the activity.
                     Message writeErrorMsg =
-                            mHandler.obtainMessage(MessageConstants.MESSAGE_TOAST);
+                            mHandler.obtainMessage(Constants.MESSAGE_TOAST);
                     Bundle bundle = new Bundle();
                     bundle.putString("toast",
                             "Couldn't send data to the other device");
@@ -239,6 +267,7 @@ public class BluetoothService {
         public void cancel() {
             try {
                 mmSocket.close();
+                mState = Constants.STATE_NONE;
             } catch (IOException e) {
                 Log.e(TAG, "Could not close the connect socket", e);
             }

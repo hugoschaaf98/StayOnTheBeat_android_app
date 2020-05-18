@@ -10,49 +10,44 @@
 
 
     <Switch
-        android:id="@+id/btn_blt"
+        android:id="@+id/sw_bluetooth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="135dp"
-        android:layout_marginBottom="475dp"
-        android:onClick="OnOff"
-        android:text="Bluetooth" />
+        android:layout_above="@id/bt_scan_devices"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:onClick="bluetoothSwitch"
+        android:text="@string/sw_bluetooth_text" />
 
     <Button
-        android:id="@+id/btn_disc"
+        android:id="@+id/bt_scan_devices"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="61dp"
-        android:layout_marginBottom="600dp"
-        android:onClick="btnDiscover"
-        android:text="Scanner les appareils autour" />
+
+        android:layout_above="@id/bt_enable_discoverability"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:onClick="scanDevices"
+        android:text="@string/bt_scan_devices_text" />
 
     <Button
-        android:id="@+id/bn_discover"
+        android:id="@+id/bt_enable_discoverability"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="99dp"
-        android:layout_marginBottom="526dp"
-        android:onClick="btnEnableDisable_Discoverable"
-        android:text="Activer la détection" />
+        android:layout_above="@id/LvNewDevices"
+        android:layout_marginBottom="16dp"
+        android:layout_centerHorizontal="true"
+        android:onClick="enableDiscoverability"
+        android:text="@string/bt_enable_discoverability_text" />
+
 
     <ListView
         android:id="@+id/LvNewDevices"
         android:layout_width="match_parent"
-        android:layout_height="387dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="0dp"
-        android:layout_marginBottom="61dp">
+        android:layout_height="150dp"
+        android:layout_above="@id/bottom_navigation">
 
     </ListView>
-
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

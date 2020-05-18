@@ -2,7 +2,6 @@ package fr.damansoviet.stayonthebeat.models.peripherals;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.util.Log;
 
@@ -11,7 +10,7 @@ import androidx.annotation.Nullable;
 import java.util.Set;
 import java.util.UUID;
 
-public class BluetoothManager {
+public class BluetoothManager implements BluetoothEventsManagement {
 
     private static final String TAG = "Bluetooth Manager";
     private static final int REQUEST_ENABLE_BT = 10;
@@ -78,15 +77,18 @@ public class BluetoothManager {
      * Register a handler to receive back bluetooth events and data
      * @param handler
      */
-    public void registerBluetoothEventsHandler(Handler handler) {
-        mHandler = handler;
+    public void registerBluetoothEventsHandler(Handler handler){
+        Log.d(TAG, "Bluetooth events handler registered");
+        mBluetoothService.registerBluetoothEventsHandler(handler);
     }
 
     public void unregisterBluetoothEventsHandler() {
-        mHandler = null;
+        Log.d(TAG, "Bluetooth events handler unregistered");
+        mBluetoothService.unregisterBluetoothEventsHandler();
     }
 
     public void connectAndStartClient() {
+        Log.d(TAG, "Start the client");
         mBluetoothService.startConnectThread(mBluetoothDevice, mUuid);
     }
 
@@ -95,4 +97,12 @@ public class BluetoothManager {
         mBluetoothService.stopConnectedThread();
     }
 
+    public void write(byte[] out) {
+        if(mBluetoothService == null)
+        {
+            Log.w(TAG, "write: couldn't write.");
+            return;
+        }
+        mBluetoothService.write(out);
+    }
 }
