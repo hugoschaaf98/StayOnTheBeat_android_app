@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class BluetoothService implements BluetoothEventsManagement {
 
-    private static final String TAG = "Bluetooth Service";
+    private static final String TAG = "BluetoothService";
 
     @Nullable
     private Handler mHandler = null; // handler that gets info from Bluetooth service
@@ -149,6 +149,7 @@ public class BluetoothService implements BluetoothEventsManagement {
                 mmSocket.connect();
             } catch (IOException connectException) {
                 // Unable to connect; close the socket and return.
+                Log.e(TAG, "Socket's connect() method failed", connectException);
                 try {
                     mmSocket.close();
                 } catch (IOException closeException) {
@@ -159,6 +160,7 @@ public class BluetoothService implements BluetoothEventsManagement {
 
             // The connection attempt succeeded. Perform work associated with
             // the connection in a separate thread.
+            Log.d(TAG, "Socket's connect() succeeded. Call startConnectedThread()");
             startConnectedThread(mmSocket);
         }
 

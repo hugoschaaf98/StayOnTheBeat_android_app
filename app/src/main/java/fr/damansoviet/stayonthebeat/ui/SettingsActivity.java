@@ -1,6 +1,5 @@
 package fr.damansoviet.stayonthebeat.ui;
 
-import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -13,8 +12,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,26 +32,23 @@ import fr.damansoviet.stayonthebeat.models.peripherals.BluetoothManager;
 
 public class SettingsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
-    private static final String TAG = "Settings Activity";
+    private static final String TAG = "SettingsActivity";
 
     private BluetoothAdapter mBluetoothAdapter ;
     private BluetoothManager mBluetoothManager;
 
-    public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>() ;
-    public DeviceListAdapter mDeviceListAdapter ;
-    ListView lvNewDevices ;
+    private ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>() ;
+    private DeviceListAdapter mDeviceListAdapter ;
+    // graphical components
+    private Switch mBluetoothSwitch;
+    private ListView mLvNewDevices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate ( savedInstanceState );
         setContentView ( R.layout.activity_settings );
-
         NavBar();
         init();
-        // initialisation de notre adapteur bluetooth
-        AppContainer appContainer = ((StayOnTheBeatApplication)getApplication()).appContainer;
-        mBluetoothManager = appContainer.bluetoothManager;
-        mBluetoothAdapter = mBluetoothManager.getBluetoothAdapter();
     }
 
     /**
@@ -61,22 +57,28 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
     @Override
     protected void onDestroy()
     {
-        Log.d ( TAG,"onDestroy: called" );
         super.onDestroy ();
+
+        Log.d ( TAG,"onDestroy: called" );
         unregisterReceiver ( mBroadcastReceiver1 );
         unregisterReceiver ( mBroadcastReceiver2 );
         unregisterReceiver ( mBroadcastReceiver3 );
     }
-
 
     /**
      * Initialisation des paramètres graphiques
      */
     private void init()
     {
-        Button btn_blt = (Button) findViewById ( R.id.sw_bluetooth);
-        lvNewDevices = (ListView) findViewById ( R.id.LvNewDevices );
-        lvNewDevices.setOnItemClickListener ( (AdapterView.OnItemClickListener) SettingsActivity.this );
+        AppContainer appContainer = ((StayOnTheBeatApplication)getApplication()).appContainer;
+        mBluetoothManager = appContainer.bluetoothManager;
+        mBluetoothAdapter = mBluetoothManager.getBluetoothAdapter();
+        // setup the devices list
+        mLvNewDevices = (ListView) findViewById ( R.id.LvNewDevices );
+        mLvNewDevices.setOnItemClickListener ( (AdapterView.OnItemClickListener) SettingsActivity.this );
+        // initialize the bluetooth switch position
+        mBluetoothSwitch = findViewById(R.id.sw_bluetooth);
+        mBluetoothSwitch.setChecked(mBluetoothAdapter.isEnabled());
     }
 
     /*** SLOTS ***/
@@ -221,10 +223,18 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         String deviceAddress = tmp.getAddress ();
         Log.d(TAG , "onItemClick : deviceName = " + deviceName);
         Log.d(TAG , "onItemClick : deviceAddress = " + deviceAddress);
+
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
         {
-            Log.d(TAG , "Tentative d'apparaillage " + deviceName);
-            tmp.createBond ();
+            // check if we need to pair else start the client directly
+            if(tmp.getBondState () != BluetoothDevice.BOND_BONDED) {
+                Log.d(TAG, "Tentative d'apparaillage " + deviceName);
+                tmp.createBond();
+            }
+            else {
+                mBluetoothManager.setBluetoothDevice(tmp);
+                mBluetoothManager.connectAndStartClient();
+            }
             IntentFilter discoverDevicesIntent = new IntentFilter ( BluetoothDevice.ACTION_BOND_STATE_CHANGED);
             registerReceiver ( mBroadcastReceiver4 , discoverDevicesIntent);
         }
@@ -374,7 +384,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                 //appel du constructeur de la classe DeviceListAdapter
                 mDeviceListAdapter = new DeviceListAdapter ( context , R.layout.device_list , mBTDevices );
                 //intégration de la vue mDeviceListAdapter dans notre ListView
-                lvNewDevices.setAdapter ( mDeviceListAdapter );
+                mLvNewDevices.setAdapter ( mDeviceListAdapter );
             }
         }
     };
@@ -412,6 +422,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                 {
                     Log.d(TAG, "Broadcast : BOND_NONE");
                     Toast.makeText (SettingsActivity.this,"Impossible de se connecter avec l'appareil",Toast.LENGTH_SHORT).show ();
+                    mBluetoothManager.shutdownClient();
                 }
 
             }
