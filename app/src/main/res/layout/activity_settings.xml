@@ -1,9 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingsActivity">
+    android:background="@color/colorBG"
+    tools:context=".ui.SettingsActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Switch
+        android:id="@+id/sw_bluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bt_scan_devices"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:onClick="bluetoothSwitch"
+        android:text="@string/sw_bluetooth_text" />
+
+    <Button
+        android:id="@+id/bt_scan_devices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_above="@id/bt_enable_discoverability"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:onClick="scanDevices"
+        android:text="@string/bt_scan_devices_text" />
+
+    <Button
+        android:id="@+id/bt_enable_discoverability"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/LvNewDevices"
+        android:layout_marginBottom="16dp"
+        android:layout_centerHorizontal="true"
+        android:onClick="enableDiscoverability"
+        android:text="@string/bt_enable_discoverability_text" />
+
+
+    <ListView
+        android:id="@+id/LvNewDevices"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_above="@id/bottom_navigation">
+
+    </ListView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:itemBackground="@color/colorNavBar"
+        app:itemIconTint="@drawable/bottom_navigation_colors"
+        app:itemTextColor="@drawable/bottom_navigation_colors"
+        app:menu="@menu/menu_navigation" />
+
+</RelativeLayout>

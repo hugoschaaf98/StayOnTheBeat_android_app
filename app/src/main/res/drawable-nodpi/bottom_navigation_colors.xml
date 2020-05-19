@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- CECI EST UN TEST PERMETTANT DE MODIFIER LA COULEUR d'UN ELEM SELECTIONNE-->
+    <item
+        android:state_checked="true"
+        android:color="@color/colorSelectElemNB" />
+    <item
+        android:state_checked="false"
+        android:color="@color/colorUnselectedNB" />
+</selector>

@@ -1,16 +1,22 @@
 package fr.damansoviet.stayonthebeat;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.annotation.SuppressLint;
 import android.os.Build;
 import android.view.View;
 
+import androidx.core.app.ActivityCompat;
+
 import java.util.concurrent.atomic.AtomicInteger;
+
+import fr.damansoviet.stayonthebeat.ui.ControlActivity;
 
 
 public class Utils {
+    private ControlActivity controlActivity;
 
     /*** Misc utils ***/
 
@@ -67,4 +73,9 @@ public class Utils {
             return View.generateViewId();
         }
     }
+
+
+
+
+
 }

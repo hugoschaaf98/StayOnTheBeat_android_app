@@ -3,4 +3,13 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="colorBG">#8D8E95</color>
+
+
+    <!-- NavBar -->
+    <color name="colorNavBar">#00897B</color>
+    <color name="colorElemNavBar">#bfcced</color>
+    <color name="colorSelectElemNB">#ffffff</color>
+    <color name="colorUnselectedNB">#02554D</color>
+
 </resources>
